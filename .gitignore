@@ -1,0 +1,11 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+
+# Local Claude settings (keep launch.json if you want previews; ignore personal overrides)
+.claude/settings.local.json

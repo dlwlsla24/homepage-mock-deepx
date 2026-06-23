@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Success Stories — DEEPX | Physical AI Semiconductors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- scroll progress -->
+  <div class="scroll-progress" id="progress" aria-hidden="true"></div>
+
+  <!-- ambient layers -->
+  <div class="aurora" aria-hidden="true">
+    <span class="aurora__blob aurora__blob--1"></span>
+    <span class="aurora__blob aurora__blob--2"></span>
+    <span class="aurora__blob aurora__blob--3"></span>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo">
+        <img src="assets/deepx-logo.svg" alt="DEEPX" class="nav__logo-img" />
+      </a>
+      <nav class="nav__links">
+        <a href="#stories">Stories</a>
+        <a href="#impact">Impact</a>
+        <a href="#products">Silicon</a>
+        <a href="#partners">Partners</a>
+      </nav>
+      <a href="#cta" class="btn btn--primary nav__cta">Get a chip <i class="arr"></i></a>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <img class="hero__img" src="assets/hero-main.png" alt="DEEPX Physical AI — autonomous robots and robotic arm" />
+    <div class="hero__veil"></div>
+    <div class="hero__inner">
+      <span class="pill reveal">
+        <span class="pill__dot"></span>
+        Leader in Physical AI Semiconductors
+      </span>
+      <h1 class="hero__title reveal">
+        Real-world AI,<br />
+        <span class="grad">proven in silicon.</span>
+      </h1>
+      <p class="hero__sub reveal">
+        See how the world's hardware leaders ship real&#8209;time, on&#8209;device
+        intelligence with DEEPX &mdash; ultra&#8209;low&#8209;power Physical&nbsp;AI
+        semiconductors detecting, deciding and acting at the edge.
+      </p>
+      <div class="hero__actions reveal">
+        <a href="#stories" class="btn btn--primary btn--lg">Explore the stories <i class="arr"></i></a>
+        <a href="#impact" class="btn btn--glass btn--lg">See the impact</a>
+      </div>
+      <div class="ticker reveal">
+        <span>DX-M1</span><i></i><span>DX-M2</span><i></i><span>DX-H1</span><i></i>
+        <span>&lt;5W</span><i></i><span>25&times; TOPS/W</span><i></i><span>0ms cloud</span>
+      </div>
+    </div>
+    <a href="#impact" class="hero__scroll" aria-label="Scroll"><span></span></a>
+  </section>
+
+  <!-- ============ IMPACT ============ -->
+  <section class="section impact" id="impact">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">The impact</span>
+        <h2>Lower power. Lower heat. <span class="grad">Higher confidence.</span></h2>
+      </div>
+      <div class="impact__grid">
+        <div class="stat tilt reveal">
+          <div class="stat__num grad" data-count="68" data-suffix="%">0</div>
+          <div class="stat__label">Lower energy cost vs. GPU inference</div>
+        </div>
+        <div class="stat tilt reveal">
+          <div class="stat__num grad" data-count="4.7" data-suffix="ms" data-decimals="1">0</div>
+          <div class="stat__label">Median on-device inference latency</div>
+        </div>
+        <div class="stat tilt reveal">
+          <div class="stat__num grad" data-count="120" data-suffix="K+">0</div>
+          <div class="stat__label">DEEPX NPUs deployed in production</div>
+        </div>
+        <div class="stat tilt reveal">
+          <div class="stat__num grad" data-count="99.2" data-suffix="%" data-decimals="1">0</div>
+          <div class="stat__label">Defect-detection accuracy in factories</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED ============ -->
+  <section class="section featured">
+    <div class="wrap">
+      <article class="feat spotlight reveal">
+        <div class="feat__media">
+          <img src="assets/smart-factory.jpg" alt="Smart factory inspection line" loading="lazy" />
+          <span class="tag">Smart Factory</span>
+        </div>
+        <div class="feat__body">
+          <span class="eyebrow">Featured story</span>
+          <h2>POSCO cut steel-defect escapes by <span class="grad">41%</span></h2>
+          <p>
+            A DX&#8209;M1 vision pipeline inspects every coil at full line speed,
+            catching micro&#8209;cracks human inspectors miss &mdash; on a fan&#8209;less
+            edge box drawing under&nbsp;5W. No cloud round&#8209;trip, no thermal
+            throttling, no escapes.
+          </p>
+          <div class="feat__kpis">
+            <div class="kpibox"><strong class="grad">99.2%</strong><span>inspection accuracy</span></div>
+            <div class="kpibox"><strong class="grad">41%</strong><span>fewer escapes</span></div>
+            <div class="kpibox"><strong class="grad">&lt;5W</strong><span>power per node</span></div>
+          </div>
+          <a href="#" class="link">Read the full case study <i class="arr arr--blue"></i></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ STORY GRID ============ -->
+  <section class="section stories" id="stories">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Success stories</span>
+        <h2>Where DEEPX is already working</h2>
+        <p>Filter by the world they're transforming.</p>
+      </div>
+
+      <div class="filters reveal" id="filters">
+        <button class="filter is-active" data-filter="all">All</button>
+        <button class="filter" data-filter="mobility">Smart Mobility</button>
+        <button class="filter" data-filter="city">Smart City</button>
+        <button class="filter" data-filter="vms">Video / VMS</button>
+        <button class="filter" data-filter="edge">Edge Computing</button>
+        <button class="filter" data-filter="factory">Smart Factory</button>
+      </div>
+
+      <div class="grid" id="storyGrid">
+        <article class="card spotlight reveal" data-cat="mobility">
+          <div class="card__media">
+            <img src="assets/smart-mobility.jpg" alt="Autonomous mobile robot" loading="lazy" />
+            <span class="tag">Smart Mobility</span>
+          </div>
+          <div class="card__body">
+            <h3>Hyundai's AMRs navigate without the cloud</h3>
+            <p>Obstacle detection runs locally on DX&#8209;H1, holding sub&#8209;5ms reaction times even when the network drops.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>4.7ms</strong> latency</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card spotlight reveal" data-cat="city">
+          <div class="card__media">
+            <img src="assets/smart-city.jpg" alt="Smart city traffic" loading="lazy" />
+            <span class="tag">Smart City</span>
+          </div>
+          <div class="card__body">
+            <h3>A metro city reads traffic in real time</h3>
+            <p>Edge cameras count, classify and re&#8209;time signals on&#8209;device across 200+ intersections.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>23%</strong> less congestion</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card spotlight reveal" data-cat="vms">
+          <div class="card__media">
+            <img src="assets/video-management.jpg" alt="Video management analytics" loading="lazy" />
+            <span class="tag">Video / VMS</span>
+          </div>
+          <div class="card__body">
+            <h3>LG Electronics packs 16 streams into one box</h3>
+            <p>DX&#8209;M1M consolidates analytics for sixteen camera feeds on a single NPU, slashing rack space.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>16ch</strong> per chip</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card spotlight reveal" data-cat="edge">
+          <div class="card__media">
+            <img src="assets/edge-computing.jpg" alt="Edge computing gateway" loading="lazy" />
+            <span class="tag">Edge Computing</span>
+          </div>
+          <div class="card__body">
+            <h3>An AI gateway that runs for years on a battery</h3>
+            <p>Advantech moved inference onto DEEPX silicon, making truly off&#8209;grid anomaly detection practical.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>68%</strong> lower energy</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card spotlight reveal" data-cat="factory">
+          <div class="card__media">
+            <img src="assets/smart-factory.jpg" alt="Predictive maintenance" loading="lazy" />
+            <span class="tag">Smart Factory</span>
+          </div>
+          <div class="card__body">
+            <h3>Predictive maintenance that pays for itself</h3>
+            <p>Vibration and thermal models run at the machine, catching bearing failures days early.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>-37%</strong> downtime</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card spotlight reveal" data-cat="city">
+          <div class="card__media">
+            <img src="assets/smart-city.jpg" alt="Public safety analytics" loading="lazy" />
+            <span class="tag">Smart City</span>
+          </div>
+          <div class="card__body">
+            <h3>Public-safety analytics at the pole, not the cloud</h3>
+            <p>On&#8209;device crowd and incident detection keeps citizen video private and response times low.</p>
+            <div class="card__foot">
+              <span class="kpi"><strong>0</strong> cloud egress</span>
+              <a href="#" class="link link--sm">Read <i class="arr arr--blue"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTS ============ -->
+  <section class="section products" id="products">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Under the hood</span>
+        <h2>Every story runs on <span class="grad">DEEPX silicon</span></h2>
+        <p>From the bare die to fully integrated systems.</p>
+      </div>
+      <div class="products__grid">
+        <a href="#" class="product tilt reveal">
+          <div class="product__img"><img src="assets/ai-chips.png" alt="DEEPX AI Chips" loading="lazy" /></div>
+          <h3>AI Chips</h3>
+          <p>DX&#8209;M1 &amp; DX&#8209;M2 NPUs &mdash; datacenter&#8209;grade vision AI at single&#8209;digit watts.</p>
+          <span class="link link--sm">Explore chips <i class="arr arr--blue"></i></span>
+        </a>
+        <a href="#" class="product tilt reveal">
+          <div class="product__img"><img src="assets/ai-modules.png" alt="DEEPX AI Modules" loading="lazy" /></div>
+          <h3>AI Modules</h3>
+          <p>Drop&#8209;in M.2 and SoM modules to add an NPU to any edge design in minutes.</p>
+          <span class="link link--sm">Explore modules <i class="arr arr--blue"></i></span>
+        </a>
+        <a href="#" class="product tilt reveal">
+          <div class="product__img"><img src="assets/ai-systems.jpg" alt="DEEPX AI Systems" loading="lazy" /></div>
+          <h3>AI Systems</h3>
+          <p>Fan&#8209;less, ruggedized boxes ready to deploy on the factory floor or the street.</p>
+          <span class="link link--sm">Explore systems <i class="arr arr--blue"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUOTE ============ -->
+  <section class="section quote">
+    <div class="wrap quote__wrap reveal">
+      <div class="quote__mark grad">&ldquo;</div>
+      <blockquote>
+        DEEPX gave us datacenter&#8209;grade vision AI inside a device that fits in
+        your palm and sips power. It changed what we thought the edge was capable of.
+      </blockquote>
+      <div class="quote__by">
+        <span class="quote__avatar">JK</span>
+        <div>
+          <strong>J. Kim</strong>
+          <span>VP of Engineering, Mobility Partner</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARTNERS ============ -->
+  <section class="section partners" id="partners">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Trusted by</span>
+        <h2>Built with the world's hardware leaders</h2>
+      </div>
+    </div>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <img src="assets/logo-hp.svg" alt="HP" />
+        <img src="assets/logo-lenovo.svg" alt="Lenovo" />
+        <img src="assets/logo-supermicro.svg" alt="SuperMicro" />
+        <img src="assets/logo-baidu.png" alt="Baidu" />
+        <img src="assets/logo-asrock.svg" alt="ASRock" />
+        <img src="assets/logo-advantech.svg" alt="Advantech" />
+        <img src="assets/logo-msi.svg" alt="MSI" />
+        <img src="assets/logo-hp.svg" alt="HP" />
+        <img src="assets/logo-lenovo.svg" alt="Lenovo" />
+        <img src="assets/logo-supermicro.svg" alt="SuperMicro" />
+        <img src="assets/logo-baidu.png" alt="Baidu" />
+        <img src="assets/logo-asrock.svg" alt="ASRock" />
+        <img src="assets/logo-advantech.svg" alt="Advantech" />
+        <img src="assets/logo-msi.svg" alt="MSI" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="section cta" id="cta">
+    <div class="wrap">
+      <div class="cta__card reveal">
+        <div class="cta__glow"></div>
+        <h2>Your success story <span class="grad">is next.</span></h2>
+        <p>AI chips available for testing today. Tell us what you're building.</p>
+        <div class="cta__actions">
+          <a href="#" class="btn btn--primary btn--lg">Apply for a dev kit <i class="arr"></i></a>
+          <a href="#" class="btn btn--glass btn--lg">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <img src="assets/deepx-logo.svg" alt="DEEPX" class="footer__logo-img" />
+      <span class="footer__note">Pioneering Physical AI Semiconductors · Mockup redesign</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

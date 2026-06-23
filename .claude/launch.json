@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "deepx-clone",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["serve.py", "8100", "deepx-clone"],
+      "port": 8100
+    }
+  ]
+}
