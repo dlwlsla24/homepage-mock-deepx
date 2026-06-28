@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytics Dashboard — DEEPX</title>
+<meta name="description" content="DEEPX 웹 트래픽 분석 대시보드 (목업 데이터)">
+<style>
+  :root{
+    --bg:#070b16; --bg2:#0b1222; --panel:#0e1729; --panel2:#111d36;
+    --line:#1c2a47; --line2:#26375c;
+    --txt:#eaf0ff; --muted:#8a99bd; --muted2:#5e6e93;
+    --accent:#2f6bff; --accent2:#7aa2ff; --cyan:#39d3e0; --green:#2fd07a;
+    --up:#36d399; --down:#ff5470; --warn:#ffb648; --danger:#ff4d68;
+    --radius:18px; --shadow:0 18px 50px rgba(0,0,0,.45);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:Roboto,system-ui,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+    color:var(--txt);
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(47,107,255,.16), transparent 60%),
+      radial-gradient(900px 500px at -5% 8%, rgba(57,211,224,.08), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* header */
+  header.bar{position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(14px);
+    background:rgba(7,11,22,.72);border-bottom:1px solid var(--line)}
+  .bar__in{display:flex;align-items:center;gap:28px;height:66px}
+  .brand img{height:22px;display:block;filter:brightness(0) invert(1)}
+  .nav{display:flex;gap:24px;margin-left:8px}
+  .nav a{color:var(--muted);font-size:14.5px;font-weight:500;transition:color .15s}
+  .nav a:hover{color:var(--txt)}
+  .nav a.active{color:var(--txt)}
+  .nav a.active::after{content:"";display:block;height:2px;margin-top:6px;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .bar__right{margin-left:auto;display:flex;align-items:center;gap:14px}
+  .live{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+  .live b{color:var(--txt)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(47,208,122,.15);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  @media(max-width:980px){.nav{display:none}}
+
+  /* page head */
+  .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:34px 0 22px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:600}
+  .eyebrow .b{width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+  h1{font-size:clamp(24px,3vw,34px);margin:12px 0 4px;font-weight:800;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:14px}
+  .ranges{display:flex;gap:6px;background:var(--bg2);border:1px solid var(--line);padding:5px;border-radius:12px}
+  .ranges button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;cursor:pointer;transition:.15s}
+  .ranges button:hover{color:var(--txt)}
+  .ranges button.on{background:linear-gradient(180deg,var(--accent),#1f5bff);color:#fff;box-shadow:0 6px 16px rgba(47,107,255,.35)}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  section.block{padding:14px 0 8px}
+  .block h2{font-size:18px;font-weight:700;margin:26px 0 14px;display:flex;align-items:center;gap:10px}
+  .block h2 .bar3{width:4px;height:18px;border-radius:2px;background:linear-gradient(180deg,var(--accent2),var(--accent))}
+  .block h2 .hint{font-weight:400;font-size:12.5px;color:var(--muted2)}
+
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  @media(max-width:1080px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.kpis{grid-template-columns:1fr}}
+  .kpi{padding:18px 18px 12px;position:relative;overflow:hidden}
+  .kpi .k{color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+  .kpi .icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(47,107,255,.12);color:var(--accent2);font-size:15px}
+  .kpi .v{font-size:27px;font-weight:800;margin-top:12px;letter-spacing:-.02em}
+  .kpi .v small{font-size:.5em;color:var(--muted);font-weight:600;margin-left:3px}
+  .kpi .d{font-size:12.5px;margin-top:4px;display:flex;align-items:center;gap:6px}
+  .kpi .d .delta{font-weight:700} .up{color:var(--up)} .down{color:var(--down)}
+  .kpi .d .vs{color:var(--muted2)}
+  .spark{margin-top:10px;width:100%;height:36px;display:block}
+
+  /* geo */
+  .geo{display:grid;grid-template-columns:1.7fr 1fr;gap:14px}
+  @media(max-width:1080px){.geo{grid-template-columns:1fr}}
+  .map-card{padding:16px 18px}
+  .map-wrap{position:relative}
+  svg.map{display:block;width:100%;height:auto}
+  .land{fill:#1b2a49}
+  .bub{cursor:pointer;transition:filter .15s}
+  .bub:hover{filter:brightness(1.25)}
+  .ping{transform-box:fill-box;transform-origin:center;animation:ping 2.4s ease-out infinite}
+  @keyframes ping{0%{r:6;opacity:.7}100%{r:34;opacity:0}}
+  .geotip{position:absolute;pointer-events:none;transform:translate(-50%,-135%);background:#0a1426;border:1px solid var(--line2);border-radius:10px;padding:8px 12px;font-size:12.5px;white-space:nowrap;box-shadow:var(--shadow);opacity:0;transition:opacity .12s;z-index:5}
+  .geotip b{font-variant-numeric:tabular-nums}
+  .legend{display:flex;align-items:center;gap:10px;color:var(--muted2);font-size:11.5px;margin-top:6px}
+  .legend .grad{height:8px;width:120px;border-radius:6px;background:linear-gradient(90deg,#2f6bff,#7a5cff,#ff5470)}
+
+  .clist{padding:8px 4px}
+  .crow{display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:center;padding:11px 14px;border-radius:10px}
+  .crow:hover{background:rgba(47,107,255,.06)}
+  .crow .rank{color:var(--muted2);font-size:13px;text-align:center;font-weight:700}
+  .crow .nm{display:flex;flex-direction:column;gap:5px}
+  .crow .nm .t{display:flex;align-items:center;gap:8px;font-size:14px}
+  .crow .flag{font-size:15px}
+  .pbar{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+  .pbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .crow .val{text-align:right;font-variant-numeric:tabular-nums}
+  .crow .val .n{font-weight:700;font-size:14px} .crow .val .p{color:var(--muted2);font-size:12px}
+  .crow .dur{font-size:12px;color:var(--cyan)}
+
+  /* tables */
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+  @media(max-width:1080px){.grid2{grid-template-columns:1fr}}
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th,.tbl td{padding:13px 16px;text-align:right;font-variant-numeric:tabular-nums;font-size:13.5px}
+  .tbl th{color:var(--muted);font-size:12px;font-weight:600;border-bottom:1px solid var(--line)}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .tbl tbody tr{border-bottom:1px solid var(--line)}
+  .tbl tbody tr:last-child{border-bottom:0}
+  .tbl tbody tr:hover{background:rgba(47,107,255,.05)}
+  .url{color:var(--accent2)}
+  .mut{color:var(--muted2);font-size:12px}
+  .tag{font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid var(--line2);color:var(--muted)}
+  .good{color:var(--up)} .bad{color:var(--down)} .warnc{color:var(--warn)}
+  .pad{padding:6px 10px}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.twocol{grid-template-columns:1fr}}
+
+  /* activity stream */
+  .alert{display:flex;align-items:center;gap:12px;padding:13px 18px;border:1px solid rgba(255,77,104,.4);background:rgba(255,77,104,.08);border-radius:12px;margin-bottom:12px;font-size:13.5px}
+  .alert .ic{width:26px;height:26px;border-radius:8px;background:rgba(255,77,104,.18);color:var(--danger);display:grid;place-items:center}
+  .alert b{color:#ffb3c0}
+  .stream td .ipb{font-weight:600}
+  .stream tbody tr{cursor:pointer}
+  .stream tr.danger{background:rgba(255,77,104,.07)}
+  .stream tr.danger:hover{background:rgba(255,77,104,.13)}
+  .stream tr.warn{background:rgba(255,182,72,.06)}
+  .badge{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600}
+  .badge.n{background:rgba(54,211,153,.14);color:var(--up)}
+  .badge.w{background:rgba(255,182,72,.16);color:var(--warn)}
+  .badge.d{background:rgba(255,77,104,.16);color:var(--danger)}
+  .chev{color:var(--muted2);transition:transform .2s}
+  tr.open .chev{transform:rotate(90deg)}
+
+  /* clickstream panel */
+  #cs{margin-top:12px;display:none}
+  #cs.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .cs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .cs-head .who{font-size:14px}
+  .cs-head .who b{font-size:15px}
+  .cs-close{border:1px solid var(--line2);background:transparent;color:var(--muted);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px}
+  .flow{display:flex;align-items:stretch;gap:0;padding:24px 20px;overflow-x:auto}
+  .step{min-width:150px;flex:1;position:relative;padding:0 10px}
+  .step .node{background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:12px 14px}
+  .step .pg{font-size:13px;font-weight:600;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .step .tm{font-size:12px;color:var(--cyan)}
+  .step .pbar{margin-top:8px}
+  .step.exit .node{border-color:rgba(255,77,104,.5)}
+  .step.exit .pg{color:#ffb3c0}
+  .step .arrow{position:absolute;top:24px;right:-6px;color:var(--muted2);font-size:14px;z-index:2}
+  .step:last-child .arrow{display:none}
+  .step .idx{font-size:11px;color:var(--muted2);margin-bottom:6px}
+
+  /* CTR bars */
+  .ctrwrap{padding:8px 6px}
+  .ctrrow{display:grid;grid-template-columns:1.3fr 2.4fr auto;gap:14px;align-items:center;padding:12px 14px}
+  .ctrrow .lbl{font-size:13.5px}
+  .ctrrow .lbl .s{display:block;color:var(--muted2);font-size:11.5px;margin-top:2px}
+  .ctrrow .track{height:9px;border-radius:6px;background:var(--line);overflow:hidden}
+  .ctrrow .track i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--cyan),var(--accent));width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+  .ctrrow .pct{text-align:right;font-variant-numeric:tabular-nums}
+  .ctrrow .pct .n{font-weight:700} .ctrrow .pct .c{color:var(--muted2);font-size:12px}
+
+  .note{color:var(--muted2);font-size:12px;line-height:1.7;margin:18px 0 0;border-top:1px solid var(--line);padding-top:16px}
+  footer{border-top:1px solid var(--line);margin-top:36px;padding:28px 0;color:var(--muted2);font-size:12.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar__in">
+    <a class="brand" href="../../../index.html" aria-label="DEEPX home">
+      <img src="../../../cdn/wp-content/uploads/Logo.svg" alt="DEEPX">
+    </a>
+    <nav class="nav">
+      <a href="../../../site/products/dx-m1/index.html">Products</a>
+      <a href="../../../site/solutions/success-stories/index.html">Solutions</a>
+      <a href="../../../site/company/our-story/index.html">About&nbsp;Us</a>
+      <a href="../../../site/ir/stock-information/index.html">IR</a>
+      <a class="active" href="#">Analytics</a>
+    </nav>
+    <div class="bar__right">
+      <span class="live"><span class="dot"></span> 현재 접속 <b id="liveN">1,284</b>명</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="phead">
+    <div>
+      <span class="eyebrow"><span class="b"></span> Web Analytics · Admin</span>
+      <h1>트래픽 분석 대시보드</h1>
+      <div class="sub">deepx.ai · 실시간 방문자 · 국가별 유입 · 콘텐츠 성과 · 보안 모니터링 <span style="color:var(--muted2)">— 목업(Mockup) 데이터</span></div>
+    </div>
+    <div class="ranges" id="ranges">
+      <button data-r="24H">24H</button>
+      <button data-r="7D" class="on">7D</button>
+      <button data-r="30D">30D</button>
+    </div>
+  </div>
+
+  <!-- 1. KPI -->
+  <section class="block">
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <!-- 2. GEO -->
+  <section class="block">
+    <h2><span class="bar3"></span> 국가별 접속 현황 <span class="hint">Geographic Analysis · 글로벌 히트맵</span></h2>
+    <div class="geo">
+      <div class="card map-card">
+        <div class="map-wrap">
+          <svg class="map" id="map" viewBox="0 0 1000 460" aria-label="글로벌 접속 히트맵"></svg>
+          <div class="geotip" id="geotip"></div>
+        </div>
+        <div class="legend"><span>유입량</span><span class="grad"></span><span>낮음 → 높음</span><span style="margin-left:auto">● 원의 크기 = 방문자 수 · 색 = 밀도</span></div>
+      </div>
+      <div class="card clist" id="clist"></div>
+    </div>
+  </section>
+
+  <!-- 3. PAGE PERFORMANCE -->
+  <section class="block">
+    <h2><span class="bar3"></span> 페이지별 성과 분석 <span class="hint">Content &amp; Page Performance</span></h2>
+    <div class="card" style="padding:6px 8px;margin-bottom:14px">
+      <table class="tbl" id="pagesTbl">
+        <thead><tr>
+          <th>인기 페이지 (URL)</th><th>PV</th><th>UV</th><th>평균 체류</th><th>이탈률</th><th>스크롤</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="twocol">
+      <div class="card pad">
+        <h3 style="margin:8px 8px 4px;font-size:14px;color:var(--muted)">🛬 시작(랜딩) 페이지 Top 5</h3>
+        <table class="tbl" id="landTbl"><tbody></tbody></table>
+      </div>
+      <div class="card pad">
+        <h3 style="margin:8px 8px 4px;font-size:14px;color:var(--muted)">🛫 종료(이탈) 페이지 Top 5</h3>
+        <table class="tbl" id="exitTbl"><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ACTIVITY STREAM -->
+  <section class="block">
+    <h2><span class="bar3"></span> IP별 유저 상세 행동 로그 <span class="hint">User Activity Stream · 보안/어뷰징 모니터링</span></h2>
+    <div class="alert" id="alert">
+      <span class="ic">⚠</span>
+      <div><b id="anomN">3건</b>의 이상 징후 감지 — 비정상 요청 폭주(크롤링/DDoS 의심) 및 다중 국가 동시 접속. <span class="mut">행을 클릭하면 이동 경로(Clickstream)를 확인할 수 있습니다.</span></div>
+    </div>
+    <div class="card" style="padding:6px 8px">
+      <table class="tbl stream" id="streamTbl">
+        <thead><tr>
+          <th>접속 시각</th><th>IP 주소</th><th>국가</th><th>기기 (OS / 브라우저)</th><th>현재 페이지</th><th>요청/분</th><th>상태</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card" id="cs">
+      <div class="cs-head">
+        <div class="who">IP <b id="csIp"></b> <span class="mut" id="csMeta"></span></div>
+        <button class="cs-close" id="csClose" aria-label="닫기">×</button>
+      </div>
+      <div class="flow" id="csFlow"></div>
+    </div>
+  </section>
+
+  <!-- 5. CLICK & EVENT -->
+  <section class="block">
+    <h2><span class="bar3"></span> 클릭 영역 &amp; 이벤트 추적 <span class="hint">Click &amp; Event Tracking</span></h2>
+    <div class="grid2">
+      <div class="card ctrwrap">
+        <h3 style="margin:10px 14px 6px;font-size:14px;color:var(--muted)">주요 UI 요소별 클릭률 (CTR)</h3>
+        <div id="ctrList"></div>
+      </div>
+      <div class="card" style="padding:6px 8px">
+        <h3 style="margin:12px 14px 2px;font-size:14px;color:var(--muted)">링크 클릭 순위 (외부/다운로드)</h3>
+        <table class="tbl" id="linkTbl"><thead><tr><th>링크 / 이벤트</th><th>유형</th><th>클릭수</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+    <p class="note">
+      ※ 본 대시보드의 모든 수치·IP·국가·이동 경로는 디자인 시연용 <b>가상 목업(Mockup) 데이터</b>이며 실제 트래픽이 아닙니다.
+      IP 주소는 임의 생성된 예시이고, 이상 징후 탐지 로직 또한 데모용 표시입니다.
+    </p>
+  </section>
+
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 DEEPX Co., Ltd. · Web Analytics Console (Mockup)</span>
+  <span>데이터 갱신: 실시간 스트리밍 시뮬레이션 · 본 데이터는 목업입니다.</span>
+</div></footer>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s,r){return (r||document).querySelector(s)};
+  var fmt=function(n){return Math.round(n).toLocaleString("ko-KR")};
+
+  /* ============ 1. KPI ============ */
+  var KPI = {
+    "24H":[
+      {key:"순 방문자 (UV)",ic:"👥",v:48210,suf:"",d:12.4,up:true,sp:[30,33,31,38,42,40,48]},
+      {key:"페이지뷰 (PV)",ic:"📄",v:142380,suf:"",d:9.1,up:true,sp:[110,118,112,130,128,138,142]},
+      {key:"평균 체류시간",ic:"⏱",v:"3:42",suf:"",d:5.3,up:true,sp:[3.1,3.3,3.2,3.5,3.4,3.6,3.7]},
+      {key:"평균 CTR",ic:"🎯",v:4.8,suf:"%",d:0.6,up:true,sp:[4.0,4.2,4.1,4.5,4.6,4.7,4.8]},
+      {key:"이탈률 (Bounce)",ic:"↩",v:38.2,suf:"%",d:-2.1,up:true,sp:[42,41,40,39,39,38.5,38.2]}
+    ],
+    "7D":[
+      {key:"순 방문자 (UV)",ic:"👥",v:312450,suf:"",d:8.7,up:true,sp:[40,42,39,45,44,47,52]},
+      {key:"페이지뷰 (PV)",ic:"📄",v:1024800,suf:"",d:6.2,up:true,sp:[130,140,135,150,148,160,168]},
+      {key:"평균 체류시간",ic:"⏱",v:"4:05",suf:"",d:3.1,up:true,sp:[3.6,3.7,3.8,3.9,4.0,4.0,4.1]},
+      {key:"평균 CTR",ic:"🎯",v:5.1,suf:"%",d:1.2,up:true,sp:[4.4,4.6,4.7,4.8,4.9,5.0,5.1]},
+      {key:"이탈률 (Bounce)",ic:"↩",v:36.4,suf:"%",d:-1.4,up:true,sp:[39,38,38,37,37,36.8,36.4]}
+    ],
+    "30D":[
+      {key:"순 방문자 (UV)",ic:"👥",v:1284900,suf:"",d:18.9,up:true,sp:[34,38,42,45,52,58,64]},
+      {key:"페이지뷰 (PV)",ic:"📄",v:4582100,suf:"",d:15.3,up:true,sp:[120,135,150,165,180,200,228]},
+      {key:"평균 체류시간",ic:"⏱",v:"3:58",suf:"",d:-1.2,up:false,sp:[4.1,4.0,4.0,3.9,3.9,3.95,3.97]},
+      {key:"평균 CTR",ic:"🎯",v:4.9,suf:"%",d:0.4,up:true,sp:[4.6,4.7,4.7,4.8,4.8,4.9,4.9]},
+      {key:"이탈률 (Bounce)",ic:"↩",v:37.1,suf:"%",d:0.8,up:false,sp:[36,36.2,36.5,36.8,37,37.1,37.1]}
+    ]
+  };
+  function spark(d){
+    var w=160,h=36,min=Math.min.apply(null,d),max=Math.max.apply(null,d),pad=(max-min)*0.2||1;
+    min-=pad;max+=pad;var p="";
+    for(var i=0;i<d.length;i++){var x=i/(d.length-1)*w,y=h-(d[i]-min)/(max-min)*h;p+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1)+" ";}
+    var area=p+"L"+w+" "+h+" L0 "+h+" Z";
+    return '<svg class="spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+
+      '<defs><linearGradient id="sf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(47,107,255,.4)"/><stop offset="1" stop-color="rgba(47,107,255,0)"/></linearGradient></defs>'+
+      '<path d="'+area+'" fill="url(#sf)"/><path d="'+p+'" fill="none" stroke="#7aa2ff" stroke-width="2"/></svg>';
+  }
+  function renderKPI(r){
+    var box=$("#kpis");box.innerHTML="";
+    KPI[r].forEach(function(k){
+      var val=typeof k.v==="number"?k.v.toLocaleString("ko-KR"):k.v;
+      var dcls=k.up?"up":"down",arrow=k.d>=0?"▲":"▼";
+      var el=document.createElement("div");el.className="card kpi";
+      el.innerHTML='<div class="k"><span>'+k.key+'</span><span class="icon">'+k.ic+'</span></div>'+
+        '<div class="v num">'+val+(k.suf?'<small>'+k.suf+'</small>':'')+'</div>'+
+        '<div class="d"><span class="delta '+dcls+'">'+arrow+' '+Math.abs(k.d)+'%</span><span class="vs">vs 이전 기간</span></div>'+
+        spark(k.sp);
+      box.appendChild(el);
+    });
+  }
+
+  /* ============ 2. GEO ============ */
+  var MAPW=1000,MAPH=460,LAT_TOP=83,LAT_BOT=-58;
+  function px(lon){return (lon+180)/360*MAPW;}
+  function py(lat){return (LAT_TOP-lat)/(LAT_TOP-LAT_BOT)*MAPH;}
+  // rough continent boxes [lonMin,lonMax,latMin,latMax] for a dotted landmass
+  var BOXES=[
+    [-130,-58,42,60],[-125,-95,30,42],[-118,-90,25,30],[-105,-83,12,25],[-92,-83,8,14], // N.America/Mexico
+    [-128,-66,60,72],[-168,-140,58,70],[-56,-20,60,82], // Canada north / Alaska / Greenland
+    [-80,-50,-4,10],[-78,-46,-22,-4],[-74,-54,-40,-22],[-73,-66,-52,-40], // S.America
+    [-11,38,40,60],[4,30,58,70],[-10,28,36,43], // Europe
+    [-17,32,16,34],[-17,12,8,16],[8,42,-8,16],[12,38,-34,-8], // Africa
+    [28,140,50,72],[35,60,30,48],[60,78,24,40],[68,90,8,28],[90,108,10,24], // Asia (Russia/ME/India/SEA)
+    [100,122,22,42],[103,135,42,54],[128,146,32,46],[118,128,-8,8], // China/East/Japan/Indonesia
+    [113,153,-38,-14],[166,179,-47,-35] // Australia / NZ
+  ];
+  var GEO=[
+    {c:"미국",f:"🇺🇸",lat:39,lon:-98,v:38420},
+    {c:"대한민국",f:"🇰🇷",lat:36.5,lon:127.8,v:31250},
+    {c:"일본",f:"🇯🇵",lat:36,lon:138,v:18900},
+    {c:"독일",f:"🇩🇪",lat:51,lon:10,v:14300},
+    {c:"중국",f:"🇨🇳",lat:35,lon:104,v:12800},
+    {c:"인도",f:"🇮🇳",lat:22,lon:79,v:11650},
+    {c:"영국",f:"🇬🇧",lat:54,lon:-2,v:9420},
+    {c:"대만",f:"🇹🇼",lat:24,lon:121,v:7640},
+    {c:"싱가포르",f:"🇸🇬",lat:1.3,lon:103.8,v:6120},
+    {c:"캐나다",f:"🇨🇦",lat:56,lon:-106,v:5890},
+    {c:"프랑스",f:"🇫🇷",lat:47,lon:2,v:5210},
+    {c:"브라질",f:"🇧🇷",lat:-10,lon:-52,v:4780}
+  ];
+  var DUR={"미국":"4:12","대한민국":"6:48","일본":"5:20","독일":"3:55","중국":"2:40","인도":"3:10","영국":"4:02","대만":"5:05","싱가포르":"4:40","캐나다":"3:48","프랑스":"3:30","브라질":"2:15"};
+  function heatColor(t){ // t 0..1 -> blue -> purple -> red
+    function mix(a,b,p){return Math.round(a+(b-a)*p);}
+    var c1=[47,107,255],c2=[122,92,255],c3=[255,84,112];
+    var r,g,b;
+    if(t<0.5){var p=t/0.5;r=mix(c1[0],c2[0],p);g=mix(c1[1],c2[1],p);b=mix(c1[2],c2[2],p);}
+    else{var p2=(t-0.5)/0.5;r=mix(c2[0],c3[0],p2);g=mix(c2[1],c3[1],p2);b=mix(c2[2],c3[2],p2);}
+    return "rgb("+r+","+g+","+b+")";
+  }
+  function renderMap(){
+    var svg=$("#map"),s="";
+    // dotted land
+    var step=12;
+    for(var x=0;x<MAPW;x+=step){
+      for(var y=0;y<MAPH;y+=step){
+        var lon=x/MAPW*360-180, lat=LAT_TOP-(y/MAPH)*(LAT_TOP-LAT_BOT);
+        var hit=false;
+        for(var i=0;i<BOXES.length;i++){var b=BOXES[i];if(lon>=b[0]&&lon<=b[1]&&lat>=b[2]&&lat<=b[3]){hit=true;break;}}
+        if(hit) s+='<circle cx="'+x+'" cy="'+y+'" r="1.6" class="land"/>';
+      }
+    }
+    // bubbles
+    var max=Math.max.apply(null,GEO.map(function(d){return d.v}));
+    GEO.forEach(function(d,i){
+      var X=px(d.lon),Y=py(d.lat),t=d.v/max,r=8+t*22,col=heatColor(t);
+      if(i<2) s+='<circle cx="'+X+'" cy="'+Y+'" fill="'+col+'" class="ping"/>';
+      s+='<circle class="bub" cx="'+X+'" cy="'+Y+'" r="'+r.toFixed(1)+'" fill="'+col+'" fill-opacity="0.78" stroke="#fff" stroke-opacity="0.5" stroke-width="1" '+
+         'data-c="'+d.c+'" data-f="'+d.f+'" data-v="'+d.v+'" data-d="'+DUR[d.c]+'"/>';
+    });
+    svg.innerHTML=s;
+    // tooltip
+    var tip=$("#geotip");
+    svg.querySelectorAll(".bub").forEach(function(b){
+      b.addEventListener("mousemove",function(e){
+        var wrap=svg.getBoundingClientRect();
+        tip.style.left=(e.clientX-wrap.left)+"px";tip.style.top=(e.clientY-wrap.top)+"px";tip.style.opacity=1;
+        tip.innerHTML=b.dataset.f+' <b>'+b.dataset.c+'</b><br><b>'+fmt(b.dataset.v)+'</b>명 · 평균 '+b.dataset.d;
+      });
+      b.addEventListener("mouseleave",function(){tip.style.opacity=0;});
+    });
+  }
+  function renderClist(){
+    var box=$("#clist");box.innerHTML='<div style="display:flex;justify-content:space-between;padding:10px 14px 4px"><h3 style="margin:0;font-size:14px;color:var(--muted)">국가별 유입 Top 10</h3><span class="mut">방문자 · 비율 · 평균 체류</span></div>';
+    var total=GEO.reduce(function(a,d){return a+d.v},0),max=GEO[0].v;
+    GEO.slice(0,10).forEach(function(d,i){
+      var pct=(d.v/total*100);
+      var row=document.createElement("div");row.className="crow";
+      row.innerHTML='<div class="rank">'+(i+1)+'</div>'+
+        '<div class="nm"><div class="t"><span class="flag">'+d.f+'</span>'+d.c+' <span class="dur">· '+DUR[d.c]+'</span></div>'+
+        '<div class="pbar"><i style="width:'+(d.v/max*100)+'%"></i></div></div>'+
+        '<div class="val"><div class="n num">'+fmt(d.v)+'</div><div class="p">'+pct.toFixed(1)+'%</div></div>';
+      box.appendChild(row);
+    });
+  }
+
+  /* ============ 3. PAGES ============ */
+  var PAGES=[
+    {u:"/",t:"메인 홈",pv:182400,uv:121300,time:"2:48",bounce:32,scroll:71},
+    {u:"/products/dx-m1",t:"DX-M1 제품",pv:98200,uv:64100,time:"5:12",bounce:21,scroll:84},
+    {u:"/ir/stock-information",t:"주가정보(IR)",pv:54300,uv:38900,time:"4:36",bounce:28,scroll:77},
+    {u:"/solutions/success-stories",t:"성공사례",pv:41200,uv:29800,time:"3:54",bounce:35,scroll:68},
+    {u:"/company/news",t:"뉴스룸",pv:33800,uv:25600,time:"2:10",bounce:48,scroll:55},
+    {u:"/products/dx-h1-quattro",t:"DX-H1 Quattro",pv:28700,uv:19400,time:"4:48",bounce:24,scroll:81},
+    {u:"/buy-now/dx-techbridge-kit",t:"TechBridge Kit",pv:21500,uv:15900,time:"6:02",bounce:18,scroll:88},
+    {u:"/contact-us/sales-support",t:"영업 문의",pv:14200,uv:11700,time:"3:20",bounce:41,scroll:62}
+  ];
+  function bnceCls(b){return b<30?"good":b>45?"bad":"warnc";}
+  function renderPages(){
+    var tb=$("#pagesTbl tbody");tb.innerHTML="";
+    PAGES.forEach(function(p){
+      tb.innerHTML+='<tr><td><span class="url">'+p.u+'</span> <span class="mut">'+p.t+'</span></td>'+
+        '<td class="num">'+fmt(p.pv)+'</td><td class="num">'+fmt(p.uv)+'</td>'+
+        '<td class="num">'+p.time+'</td><td class="num '+bnceCls(p.bounce)+'">'+p.bounce+'%</td>'+
+        '<td><div class="pbar" style="width:70px;margin-left:auto"><i style="width:'+p.scroll+'%"></i></div></td></tr>';
+    });
+    var land=[["/","메인 홈",48.2],["/products/dx-m1","DX-M1 제품",18.6],["/ir/stock-information","주가정보(IR)",9.4],["/company/news","뉴스룸",7.1],["/solutions/success-stories","성공사례",5.8]];
+    var exit=[["/contact-us/sales-support","영업 문의",22.4],["/company/news","뉴스룸",17.8],["/","메인 홈",14.2],["/ir/stock-information","주가정보(IR)",11.5],["/buy-now/dx-techbridge-kit","TechBridge Kit",8.9]];
+    function fill(id,arr,cls){
+      var tb=$(id+" tbody");tb.innerHTML="";
+      arr.forEach(function(r,i){tb.innerHTML+='<tr><td><span class="mut">'+(i+1)+'</span> <span class="url">'+r[0]+'</span> <span class="mut">'+r[1]+'</span></td><td class="num '+cls+'">'+r[2]+'%</td></tr>';});
+    }
+    fill("#landTbl",land,"good");fill("#exitTbl",exit,"bad");
+  }
+
+  /* ============ 4. ACTIVITY STREAM ============ */
+  var STREAM=[
+    {t:"15:42:08",ip:"211.45.182.91",f:"🇰🇷",co:"대한민국",os:"macOS · Chrome 126",pg:"/products/dx-m1",req:14,st:"n"},
+    {t:"15:42:03",ip:"45.143.220.17",f:"🇳🇱",co:"네덜란드",os:"Linux · (Headless)",pg:"/ (전체 크롤링)",req:1284,st:"d",note:"비정상 요청 폭주 — 크롤링/DDoS 의심"},
+    {t:"15:41:57",ip:"104.28.39.114",f:"🇺🇸",co:"미국",os:"Windows · Edge 126",pg:"/ir/stock-information",req:9,st:"n"},
+    {t:"15:41:50",ip:"185.220.101.44",f:"🇩🇪→🌐",co:"다중(Tor)",os:"Unknown · Tor Browser",pg:"/contact-us/sales-support",req:62,st:"d",note:"여러 국가 IP 동시 접속 시도"},
+    {t:"15:41:44",ip:"126.51.7.203",f:"🇯🇵",co:"일본",os:"iOS · Safari 17",pg:"/solutions/success-stories",req:7,st:"n"},
+    {t:"15:41:39",ip:"103.21.244.2",f:"🇸🇬",co:"싱가포르",os:"Linux · python-requests",pg:"/sitemap.xml",req:240,st:"w",note:"봇 패턴 — 정상 크롤러 가능성"},
+    {t:"15:41:31",ip:"49.236.118.7",f:"🇮🇳",co:"인도",os:"Android · Chrome 125",pg:"/products/dx-h1-quattro",req:11,st:"n"},
+    {t:"15:41:25",ip:"82.165.44.190",f:"🇩🇪",co:"독일",os:"Windows · Firefox 127",pg:"/buy-now/dx-techbridge-kit",req:18,st:"n"},
+    {t:"15:41:18",ip:"118.235.9.66",f:"🇰🇷",co:"대한민국",os:"Windows · Chrome 126",pg:"/company/news",req:6,st:"n"}
+  ];
+  var CS={
+    "211.45.182.91":[["/","메인 홈","2:10",100],["/products","제품 목록","1:24",62],["/products/dx-m1","DX-M1 상세","5:48",100],["/buy-now/dx-techbridge-kit","구매하기","3:02",70]],
+    "45.143.220.17":[["/","메인","0:01",8],["/products","목록","0:01",6],["/about","회사","0:01",7],["/ir/...","IR","0:01",5],["/sitemap.xml","사이트맵","0:00",4,true]],
+    "104.28.39.114":[["/","메인 홈","1:05",48],["/ir/stock-information","주가정보","4:36",100],["/company/news","뉴스룸","0:48",30,true]],
+    "185.220.101.44":[["/contact-us/sales-support","영업 문의","0:22",40],["/contact-us/career-support","채용 문의","0:15",24],["(이탈)","폼 미제출 이탈","—",10,true]],
+    "126.51.7.203":[["/","메인 홈","1:40",60],["/solutions/success-stories","성공사례","3:54",100],["/solutions/success-stories/smart-factory","스마트팩토리","2:30",78]],
+    "103.21.244.2":[["/robots.txt","robots","0:00",5],["/sitemap.xml","사이트맵","0:00",6],["/(대량 순회)","페이지 대량 순회","0:01",95,true]],
+    "49.236.118.7":[["/","메인","0:55",36],["/products/dx-h1-quattro","DX-H1 Quattro","4:48",100]],
+    "82.165.44.190":[["/","메인","1:12",44],["/buy-now/dx-techbridge-kit","TechBridge","6:02",100],["/contact-us/sales-support","영업문의","2:40",60]],
+    "118.235.9.66":[["/","메인","0:40",30],["/company/news","뉴스룸","2:10",70,true]]
+  };
+  var badgeTxt={n:'<span class="badge n">정상</span>',w:'<span class="badge w">주의</span>',d:'<span class="badge d">위험</span>'};
+  function renderStream(){
+    var tb=$("#streamTbl tbody");tb.innerHTML="";
+    STREAM.forEach(function(r){
+      var cls=r.st==="d"?"danger":r.st==="w"?"warn":"";
+      var reqc=r.req>=200?"bad":r.req>=60?"warnc":"";
+      var tr=document.createElement("tr");tr.className=cls;tr.dataset.ip=r.ip;
+      tr.innerHTML='<td class="mut">'+r.t+'</td><td><span class="ipb">'+r.ip+'</span></td>'+
+        '<td>'+r.f+' '+r.co+'</td><td class="mut">'+r.os+'</td><td class="url">'+r.pg+'</td>'+
+        '<td class="num '+reqc+'">'+fmt(r.req)+'</td><td>'+badgeTxt[r.st]+'</td><td class="chev">›</td>';
+      tr.addEventListener("click",function(){openCS(r);});
+      tb.appendChild(tr);
+    });
+  }
+  function openCS(r){
+    document.querySelectorAll(".stream tr.open").forEach(function(t){t.classList.remove("open")});
+    var tr=$('.stream tr[data-ip="'+r.ip+'"]');if(tr)tr.classList.add("open");
+    $("#csIp").textContent=r.ip;
+    $("#csMeta").textContent="· "+r.f+" "+r.co+" · "+r.os+(r.note?" · ⚠ "+r.note:"");
+    var flow=$("#csFlow"),steps=CS[r.ip]||[];flow.innerHTML="";
+    steps.forEach(function(s,i){
+      var exit=s[4]===true;
+      var d=document.createElement("div");d.className="step"+(exit?" exit":"");
+      d.innerHTML='<div class="idx">STEP '+(i+1)+'</div><div class="node"><div class="pg">'+(exit?"🚪 ":"")+s[0]+'</div>'+
+        '<div class="tm">'+(exit?'⏱ '+s[2]:'⏱ 체류 '+s[2])+'</div><div class="pbar"><i style="width:'+s[3]+'%;background:'+(exit?"linear-gradient(90deg,#ff7a8c,#ff4d68)":"linear-gradient(90deg,#39d3e0,#2f6bff)")+'"></i></div>'+
+        '<div class="mut" style="font-size:11px;margin-top:5px">'+(s[1]||"")+'</div></div><div class="arrow">→</div>';
+      flow.appendChild(d);
+    });
+    var cs=$("#cs");cs.classList.add("show");cs.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+  $("#csClose").addEventListener("click",function(){$("#cs").classList.remove("show");document.querySelectorAll(".stream tr.open").forEach(function(t){t.classList.remove("open")});});
+
+  /* ============ 5. CLICK & EVENT ============ */
+  var CTR=[
+    {l:"메인 히어로 배너",s:"hero CTA — “Apply Now”",clk:14820,pct:6.2},
+    {l:"Shop Now 버튼",s:"GNB 우측 상단",clk:9640,pct:4.1},
+    {l:"GNB — Products",s:"상단 네비게이션",clk:8120,pct:3.4},
+    {l:"평가용 칩 신청(Apply)",s:"프로모 스트립",clk:6730,pct:2.8},
+    {l:"뉴스레터 구독",s:"푸터 영역",clk:4510,pct:1.9},
+    {l:"푸터 SNS 링크",s:"LinkedIn / YouTube",clk:1680,pct:0.7}
+  ];
+  function renderCTR(){
+    var box=$("#ctrList");box.innerHTML="";var max=6.2;
+    CTR.forEach(function(c){
+      var row=document.createElement("div");row.className="ctrrow";
+      row.innerHTML='<div class="lbl">'+c.l+'<span class="s">'+c.s+'</span></div>'+
+        '<div class="track"><i data-w="'+(c.pct/max*100)+'"></i></div>'+
+        '<div class="pct"><div class="n num">'+c.pct+'%</div><div class="c num">'+fmt(c.clk)+'회</div></div>';
+      box.appendChild(row);
+    });
+  }
+  var LINKS=[
+    ["developer.deepx.ai","외부 링크",8420],["DXNN® SDK 다운로드","다운로드",6310],
+    ["DX-M1 데이터시트 (PDF)","다운로드",5180],["GitHub — deepx-ai","외부 링크",3920],
+    ["LinkedIn 채용 페이지","외부 링크",2740],["회사소개서 (PDF)","다운로드",1960],
+    ["YouTube 데모 영상","외부 링크",1430]
+  ];
+  function renderLinks(){
+    var tb=$("#linkTbl tbody");tb.innerHTML="";
+    LINKS.forEach(function(l,i){
+      var ty=l[1]==="다운로드"?'<span class="tag" style="border-color:rgba(57,211,224,.4);color:var(--cyan)">⬇ 다운로드</span>':'<span class="tag">↗ 외부</span>';
+      tb.innerHTML+='<tr><td><span class="mut">'+(i+1)+'</span> '+l[0]+'</td><td>'+ty+'</td><td class="num">'+fmt(l[2])+'</td></tr>';
+    });
+  }
+
+  /* ============ init ============ */
+  renderKPI("7D");renderMap();renderClist();renderPages();renderStream();renderCTR();renderLinks();
+
+  $("#ranges").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    [].forEach.call(this.children,function(x){x.classList.remove("on")});
+    b.classList.add("on");renderKPI(b.dataset.r);
+  });
+
+  // animate CTR bars when visible
+  var io=new IntersectionObserver(function(en){en.forEach(function(x){
+    if(x.isIntersecting){x.target.classList.add("in");
+      x.target.querySelectorAll(".track i[data-w]").forEach(function(i){i.style.width=i.dataset.w+"%";});
+    }});},{threshold:.12});
+  document.querySelectorAll(".block").forEach(function(s){s.classList.add("reveal");io.observe(s);});
+
+  // live counter jitter
+  var live=$("#liveN");setInterval(function(){
+    var base=1284,n=base+Math.floor((spark.seed=(spark.seed||1)*9301+49297)%97)-48;
+    live.textContent=fmt(Math.max(1180,n));
+  },2600);
+})();
+</script>
+</body>
+</html>

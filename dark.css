@@ -1,0 +1,125 @@
+/* ============================================================
+   DEEPX homepage — dark mode overlay
+   Converts the light Elementor content (everything below the
+   hero video) to a dark theme. Header / hero / popup already dark.
+   Loaded after popup.css; relies on !important since Elementor's
+   generated rules are not !important.
+   ============================================================ */
+
+/* ---- base surfaces ---- */
+html, body,
+.jupiterx-site,
+.jupiterx-main,
+#jupiterx-content,
+.jupiterx-footer,
+footer.jupiterx-footer,
+.jupiterx-footer-wrapper{
+  background-color:#070b16 !important;
+}
+
+/* ---- neutralize light section / container fills → show dark base ---- */
+.jupiterx-main .elementor-section,
+.jupiterx-main section.e-con,
+.jupiterx-main .e-con,
+.jupiterx-main .e-con-full,
+.jupiterx-main .e-con-inner,
+.jupiterx-main .elementor-widget-container,
+.jupiterx-main .elementor-column-wrap,
+.jupiterx-footer .e-con,
+.jupiterx-footer .e-con-full{
+  background-color:transparent !important;
+}
+
+/* ---- boxed cards → subtle elevated panel ---- */
+.jupiterx-main .e-con-boxed,
+.jupiterx-main .LatestNews_box,
+.jupiterx-main [class*="_box"],
+.jupiterx-main .elementor-widget-image-box .elementor-image-box-wrapper{
+  background-color:#0d1626 !important;
+  border:1px solid #1c2a47 !important;
+  border-radius:14px !important;
+}
+
+/* ---- text → light ---- */
+.jupiterx-main, .jupiterx-footer,
+.jupiterx-main :is(h1,h2,h3,h4,h5,h6,p,span,li,a,div,td,th,strong,em,b,i,small,label,figcaption,blockquote,time,dt,dd),
+.jupiterx-footer :is(h1,h2,h3,h4,h5,h6,p,span,li,a,div,td,th,strong,em,b,i,small,label,figcaption,blockquote,time,dt,dd){
+  color:#dde5f7 !important;
+}
+/* footer headings / rotating headline labels set a dark -webkit-text-fill-color
+   ("DEEPX Submit an Inquiry", Technical/Sales/Partnerships/Any others) */
+.jupiterx-footer :is(h1,h2,h3,h4,h5,h6,span,p,a,strong,b),
+.jupiterx-footer .jet-headline__label,
+.jupiterx-footer .elementor-heading-title{
+  -webkit-text-fill-color:#dde5f7 !important;
+}
+/* secondary / muted */
+.jupiterx-main small,
+.jupiterx-main .elementor-post__excerpt,
+.jupiterx-main .elementor-post__meta-data,
+.jupiterx-main figcaption{
+  color:#9fb0d4 !important;
+}
+
+/* ---- dividers / borders ---- */
+.jupiterx-main hr,
+.jupiterx-main .elementor-divider-separator{
+  border-color:#1c2a47 !important;
+  background-color:#1c2a47 !important;
+}
+
+/* ---- keep brand buttons readable ---- */
+.jupiterx-main .elementor-button,
+.jupiterx-main .raven-button a,
+.jupiterx-main a.elementor-button,
+.jupiterx-main button.elementor-button{
+  background-color:#1f5bff !important;
+  color:#ffffff !important;
+  border-color:#1f5bff !important;
+}
+.jupiterx-main .elementor-button:hover,
+.jupiterx-main .raven-button a:hover{
+  background-color:#2f6bff !important;
+}
+
+/* ---- partner-logo marquees: white tiles baked into images ----
+   invert + hue-rotate flips the white card to dark while keeping
+   brand hues roughly intact. */
+.jupiterx-main .raven-content-marquee img,
+.jupiterx-main .raven-marquee-item img,
+.jupiterx-main .elementor-1683 img{   /* Innovation Awards slider (loop id) */
+  filter:invert(1) hue-rotate(180deg) !important;
+}
+
+/* ---- JetTabs banner: white content/control panels → dark ---- */
+.jupiterx-main .jet-tabs__content-wrapper,
+.jupiterx-main .jet-tabs__content,
+.jupiterx-main .jet-tabs__control-wrapper{
+  background-color:transparent !important;
+}
+.jupiterx-main .jet-tabs__control{
+  background-color:#0e1729 !important;
+  border:1px solid #1c2a47 !important;
+  color:#dde5f7 !important;
+}
+.jupiterx-main .jet-tabs__control.active-tab{
+  background-color:#1f5bff !important;
+  border-color:#1f5bff !important;
+  color:#fff !important;
+}
+/* banner partner logos sit in responsive (hidden-tablet/desktop) rows,
+   never the photo column → invert only these so dark logos turn light. */
+.jupiterx-main .jet-tabs__content .elementor-hidden-tablet img,
+.jupiterx-main .jet-tabs__content .elementor-hidden-desktop img{
+  filter:invert(1) hue-rotate(180deg) !important;
+}
+
+/* ---- form fields ---- */
+.jupiterx-main input,
+.jupiterx-main textarea,
+.jupiterx-main select{
+  background-color:#0e1729 !important;
+  color:#eaf0ff !important;
+  border-color:#26375c !important;
+}
+.jupiterx-main ::placeholder{ color:#5e6e93 !important; }

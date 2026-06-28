@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# Publishes the static site in ./deepx-clone to GitHub Pages on every push to main.
+# Publishes the static site at the repo root to GitHub Pages on every push to main.
 on:
   push:
     branches: [main]
@@ -32,10 +32,10 @@ jobs:
         with:
           enablement: true
 
-      - name: Upload site (deepx-clone)
+      - name: Upload site (repo root)
         uses: actions/upload-pages-artifact@v3
         with:
-          path: deepx-clone
+          path: .
 
       - name: Deploy to GitHub Pages
         id: deployment

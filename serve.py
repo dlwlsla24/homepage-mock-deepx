@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tiny static dev server for the deepx-clone mirror.
+"""Tiny static dev server for the DEEPX mirror site.
 
 Identical to `python -m http.server` but sends no-cache headers so the
 browser never serves a stale helper script/stylesheet during iterative
@@ -22,7 +22,7 @@ class NoCacheHandler(SimpleHTTPRequestHandler):
 
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8100
-    directory = sys.argv[2] if len(sys.argv) > 2 else "deepx-clone"
+    directory = sys.argv[2] if len(sys.argv) > 2 else "."
     handler = partial(NoCacheHandler, directory=directory)
     httpd = ThreadingHTTPServer(("", port), handler)
     print(f"Serving {directory} on http://localhost:{port} (no-cache)")

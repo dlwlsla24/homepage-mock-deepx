@@ -1,0 +1,38 @@
+/* ============================================================
+   Scroll-reveal animations (furiosa.ai-style)
+   Elements fade + rise into place as they enter the viewport.
+   The hidden state is only applied once JS marks an element with
+   .dpx-reveal, so if the script never runs nothing stays hidden.
+   ============================================================ */
+.dpx-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  will-change: opacity, transform;
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--dpx-reveal-delay, 0s);
+}
+.dpx-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Directional variants (assigned by JS for a bit of variety). */
+.dpx-reveal--left  { transform: translateX(-56px); }
+.dpx-reveal--right { transform: translateX(56px); }
+.dpx-reveal--zoom  { transform: scale(0.92); }
+.dpx-reveal--left.is-visible,
+.dpx-reveal--right.is-visible,
+.dpx-reveal--zoom.is-visible { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dpx-reveal,
+  .dpx-reveal--left,
+  .dpx-reveal--right,
+  .dpx-reveal--zoom {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
