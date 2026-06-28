@@ -32,6 +32,16 @@ jobs:
         with:
           enablement: true
 
+      # Append ?v=<commit-sha> to the custom CSS/JS refs in index.html so an
+      # updated deploy never serves a stale browser-cached copy (no hard refresh
+      # needed). Source stays clean; only the published copy is stamped.
+      - name: Cache-bust custom assets
+        run: |
+          SHA="${GITHUB_SHA::8}"
+          sed -i -E 's/(href|src)="(header\.css|reveal\.css|popup\.css|dark\.css|header\.js|reveal\.js|popup\.js|i18n\.js)"/\1="\2?v='"$SHA"'"/g' index.html
+          echo "Stamped index.html assets with ?v=$SHA"
+          grep -oE '(href|src)="[a-z0-9]+\.(css|js)\?v=[0-9a-f]+"' index.html || true
+
       - name: Upload site (repo root)
         uses: actions/upload-pages-artifact@v3
         with:
